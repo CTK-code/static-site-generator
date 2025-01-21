@@ -24,23 +24,27 @@ class TestMarkdownHTMLNode(unittest.TestCase):
             + "```CODE BLOCK```\n\n"
         )
         actual = markdown_to_html_nodes(block)
-        paragrah_expected = LeafNode("p", "This is just a paragraph")
+        paragrah_expected = ParentNode(
+            "p", [LeafNode(None, "This is just a paragraph")]
+        )
         quote_expected = ParentNode(
             "blockquote",
             children=[
-                LeafNode("p", "Quote 1"),
-                LeafNode("p", "Quote 2"),
+                ParentNode("p", [LeafNode(None, "Quote 1")]),
+                ParentNode("p", [LeafNode(None, "Quote 2")]),
             ],
         )
         list_expected = ParentNode(
             "ul",
             children=[
-                LeafNode("li", "List Item 1"),
-                LeafNode("li", "List Item 2"),
+                ParentNode("li", [LeafNode(None, "List Item 1")]),
+                ParentNode("li", [LeafNode(None, "List Item 2")]),
             ],
         )
-        header_expected = LeafNode("h2", "Header2!")
-        code_expected = ParentNode("pre", children=[LeafNode("code", "CODE BLOCK")])
+        header_expected = ParentNode("h2", [LeafNode(None, "Header2!")])
+        code_expected = ParentNode(
+            "pre", children=[ParentNode("code", [LeafNode(None, "CODE BLOCK")])]
+        )
         expected = ParentNode(
             "div",
             children=[
@@ -61,9 +65,12 @@ class TestMarkdownHTMLNode(unittest.TestCase):
         expected = ParentNode(
             "ul",
             children=[
-                LeafNode("li", "This is the first list item in a list block"),
-                LeafNode("li", "This is a list item"),
-                LeafNode("li", "This is another list item"),
+                ParentNode(
+                    "li",
+                    [LeafNode(None, "This is the first list item in a list block")],
+                ),
+                ParentNode("li", [LeafNode(None, "This is a list item")]),
+                ParentNode("li", [LeafNode(None, "This is another list item")]),
             ],
         )
         self.assertEqual(expected, actual)
@@ -71,21 +78,23 @@ class TestMarkdownHTMLNode(unittest.TestCase):
     def test_markdown_to_header_node(self):
         block = "#### Header!"
         actual = markdown_to_header_node(block)
-        expected = LeafNode("h4", "Header!")
+        expected = ParentNode("h4", [LeafNode(None, "Header!")])
         self.assertEqual(expected, actual)
 
     def test_markdown_to_code_node(self):
         block = "``` This is a code block ```"
         actual = markdown_to_code_node(block)
         expected = ParentNode(
-            "pre", children=[LeafNode("code", " This is a code block ")]
+            "pre",
+            children=[ParentNode("code", [LeafNode(None, " This is a code block ")])],
         )
         self.assertEqual(expected, actual)
 
     def test_markdown_paragraph_node(self):
-        block = "This is a paragraph"
+        block = "This is just a paragraph"
         actual = markdown_to_paragraph_node(block)
-        self.assertEqual(LeafNode("p", "This is a paragraph"), actual)
+        expected = ParentNode("p", [LeafNode(None, "This is just a paragraph")])
+        self.assertEqual(expected, actual)
 
     def test_markdown_to_quote_node(self):
         block = "> Quote 1\n> Quote 2"
@@ -93,8 +102,8 @@ class TestMarkdownHTMLNode(unittest.TestCase):
         expected = ParentNode(
             "blockquote",
             children=[
-                LeafNode("p", "Quote 1"),
-                LeafNode("p", "Quote 2"),
+                ParentNode("p", [LeafNode(None, "Quote 1")]),
+                ParentNode("p", [LeafNode(None, "Quote 2")]),
             ],
         )
         self.assertEqual(expected, actual)
