@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from generate_page import generate_page
+from generate_page import generate_page, generate_page_recursive
 
 
 def print_directory(path: str, level: int):
@@ -34,14 +34,13 @@ def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     static_folder = os.path.join(dir_path, "../static")
     public_folder = os.path.join(dir_path, "../public/")
-    index_md = os.path.join(dir_path, "../content/index.md")
+    content_path = os.path.join(dir_path, "../content/")
     template_path = os.path.join(dir_path, "../template.html")
-    dest_path = os.path.join(dir_path, "../public/index.html")
     if os.path.exists(public_folder):
         shutil.rmtree(public_folder)
     os.mkdir(public_folder)
     copy_directory(static_folder, public_folder)
-    print(generate_page(index_md, template_path, dest_path))
+    generate_page_recursive(content_path, template_path, public_folder)
 
 
 if __name__ == "__main__":
