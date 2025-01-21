@@ -38,8 +38,9 @@ def text_to_children(text):
 def markdown_to_list_nodes(block, list_tag):
     children = []
     list_items = block.split("\n")
+    start = 2 if list_tag == "ul" else 3
     for item in list_items:
-        children.append(ParentNode("li", text_to_children(item[2:])))
+        children.append(ParentNode("li", text_to_children(item[start:])))
 
     return ParentNode(list_tag, children=children)
 
@@ -55,10 +56,14 @@ def markdown_to_header_node(block):
 
 
 def markdown_to_quote_node(block):
-    children = []
-    quotes = block.split("\n")
-    for quote in quotes:
-        children.append(ParentNode("p", text_to_children(quote[2:])))
+    lines = block.split("\n")
+    new_lines = []
+    for line in lines:
+        if not line.startswith(">"):
+            raise ValueError("Invalid quote block")
+        new_lines.append(line.lstrip(">").strip())
+    content = " ".join(new_lines)
+    children = text_to_children(content)
     return ParentNode("blockquote", children)
 
 
